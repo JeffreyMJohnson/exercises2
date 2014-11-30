@@ -7,12 +7,20 @@
 #include <vector>
 #include <string>
 #include <fstream>
+#include "TheMath.h"
 
 #define GLEW_STATIC
 
 GLuint CreateShader(GLenum a_ShaderType, const char* a_strShaderFile);
 
 GLuint CreateProgram(const char* a_vertex, const char* a_frag);
+
+/*
+
+THIS IS DONE. WILL NOT WORK THERE IS AN ERROR WHEN COMPILING THE ONE OR MORE OF THE SHADERS. BUG IN LESSON, NEED TO KNOW MORE BEFORE 
+FIGURE OUT WHAT THE F
+
+*/
 
 int main()
 {
@@ -28,7 +36,7 @@ int main()
 		glfwTerminate();
 		return -1;
 	}
-	
+
 	//make window's context current 
 	glfwMakeContextCurrent(window);
 
@@ -40,10 +48,55 @@ int main()
 		return -1;
 	}
 
+	const float vertexPositions[] =
+	{
+		1024 / 2.0, 720 / 2.0 + 10.0f, 0.0f, 1.0f,
+		1024 / 2.0 - 5.0f, 720 / 2.0f - 10.0f, 0.0f, 1.0f,
+		1024 / 2.0f + 5.0f, 720 / 2.0f - 10.0f, 0.0f, 1.0f,
+	};
+
+	const float vertexColors[] =
+	{
+		1.0f, 0.0f, 0.0f, 1.0f,
+		0.0f, 1.0f, 0.0f, 1.0f,
+		0.0f, 0.0f, 1.0f, 1.0f,
+	};
+
+	//create shader program
+	GLuint programFlat = CreateProgram("VertexShader.glsl", "FlatFragmentShader.glsl");
+
+	//find the position of the matrix variable int the shader program
+	GLuint IDFlat = glGetUniformLocation(programFlat, "MVP");
+
+	//set up mapping to the screen to pixel coordinates
+	float orthographicProjection[16];
+	Matrix4::GetOrthographicProjection(0, 1024, 0, 720, 0, 100).Get(orthographicProjection);
+
+
 	//loop until user closes the window
 	while (!glfwWindowShouldClose(window))
 	{
+		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		//enable shaders
+		glUseProgram(programFlat);
+
+		//send ortho projection info to shader
+		glUniformMatrix4fv(IDFlat, 1, GL_FALSE, orthographicProjection);
+
+		//enable vertex array state
+		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
+
+		//specify where vertex array is
+		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, vertexPositions);
+		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, vertexColors);
+
+
 		//draw code here
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+
 
 		//swap front and back buffers
 		glfwSwapBuffers(window);
