@@ -4,12 +4,15 @@
 //GLEW includes must b e first!
 #include <GLFW\glfw3.h>
 
+#include <iostream>
 #include <vector>
 #include <string>
 #include <fstream>
 #include "TheMath.h"
 
 #define GLEW_STATIC
+
+using namespace std;
 
 GLuint CreateShader(GLenum a_ShaderType, const char* a_strShaderFile);
 
@@ -24,6 +27,8 @@ FIGURE OUT WHAT THE F
 
 int main()
 {
+	
+	
 	if (!glfwInit())
 	{
 		return -1;
@@ -48,6 +53,8 @@ int main()
 		return -1;
 	}
 
+	//printf("Version: %s\n", glGetString(GL_VERSION));
+
 	const float vertexPositions[] =
 	{
 		1024 / 2.0, 720 / 2.0 + 10.0f, 0.0f, 1.0f,
@@ -57,13 +64,13 @@ int main()
 
 	const float vertexColors[] =
 	{
-		1.0f, 0.0f, 0.0f, 1.0f,
-		0.0f, 1.0f, 0.0f, 1.0f,
+		1.0f, 0.0f, 1.0f, 1.0f,
+		0.0f, 1.0f, 0.0f, 0.5f,
 		0.0f, 0.0f, 1.0f, 1.0f,
 	};
 
 	//create shader program
-	GLuint programFlat = CreateProgram("VertexShader.glsl", "FlatFragmentShader.glsl");
+	GLuint programFlat = CreateProgram(".\\source\\VertexShader.glsl", ".\\source\\FlatFragmentShader.glsl");
 
 	//find the position of the matrix variable int the shader program
 	GLuint IDFlat = glGetUniformLocation(programFlat, "MVP");
@@ -76,7 +83,7 @@ int main()
 	//loop until user closes the window
 	while (!glfwWindowShouldClose(window))
 	{
-		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		glClearColor(0.0f,0.0f,0.0f,0.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		//enable shaders
@@ -95,6 +102,7 @@ int main()
 
 
 		//draw code here
+		//glDrawArrays(GL_TRIANGLES, 0, 3);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 
@@ -168,6 +176,10 @@ GLuint CreateShader(GLenum a_ShaderType, const char* a_ShaderFile)
 
 GLuint CreateProgram(const char* a_vertex, const char* a_frag)
 {
+	//ofstream file;
+	//file.open(a_vertex, ios::in);
+	//cout << file.is_open() << endl;
+
 	std::vector<GLuint> shaderList;
 
 	shaderList.push_back(CreateShader(GL_VERTEX_SHADER, a_vertex));
