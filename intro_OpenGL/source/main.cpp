@@ -18,12 +18,7 @@ GLuint CreateShader(GLenum a_ShaderType, const char* a_strShaderFile);
 
 GLuint CreateProgram(const char* a_vertex, const char* a_frag);
 
-/*
-
-THIS IS DONE. WILL NOT WORK THERE IS AN ERROR WHEN COMPILING THE ONE OR MORE OF THE SHADERS. BUG IN LESSON, NEED TO KNOW MORE BEFORE 
-FIGURE OUT WHAT THE F
-
-*/
+float* getOrtho(float left, float right, float bottom, float top, float a_fNear, float a_fFar);
 
 int main()
 {
@@ -76,8 +71,8 @@ int main()
 	GLuint IDFlat = glGetUniformLocation(programFlat, "MVP");
 
 	//set up mapping to the screen to pixel coordinates
-	float orthographicProjection[16];
-	Matrix4::GetOrthographicProjection(0, 1024, 0, 720, 0, 100).Get(orthographicProjection);
+	float* orthographicProjection = getOrtho(0, 1024, 0, 720, 0, 100);
+	//Matrix4::GetOrthographicProjection(0, 1024, 0, 720, 0, 100).Get(orthographicProjection);
 
 
 	//loop until user closes the window
@@ -218,4 +213,25 @@ GLuint CreateProgram(const char* a_vertex, const char* a_frag)
 		glDeleteShader(*shader);
 	}
 	return program;
+}
+
+float* getOrtho(float left, float right, float bottom, float top, float a_fNear, float a_fFar)
+{
+	//to correspond with mat4 in the shader
+	//ideally this function would be part of your matrix class
+	//however I wasn't willing to write your matrix class for you just to show you this
+	//so here we are in array format!
+	//add this to your matrix class as a challenge if you like!
+	float* toReturn = new float[12];
+	toReturn[0] = 2.0 / (right - left);;
+	toReturn[1] = toReturn[2] = toReturn[3] = toReturn[4] = 0;
+	toReturn[5] = 2.0 / (top - bottom);
+	toReturn[6] = toReturn[7] = toReturn[8] = toReturn[9] = 0;
+	toReturn[10] = 2.0 / (a_fFar - a_fNear);
+	toReturn[11] = 0;
+	toReturn[12] = -1 * ((right + left) / (right - left));
+	toReturn[13] = -1 * ((top + bottom) / (top - bottom));
+	toReturn[14] = -1 * ((a_fFar + a_fNear) / (a_fFar - a_fNear));
+	toReturn[15] = 1;
+	return toReturn;
 }
