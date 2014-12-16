@@ -1,4 +1,4 @@
-#version 400
+#version 150
 
 smooth in vec4 vertColor;
 

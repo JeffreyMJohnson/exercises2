@@ -1,4 +1,4 @@
-#version 400
+#version 150
 
 smooth in vec4 vertColor;
 in vec2 UV;
@@ -9,6 +9,6 @@ uniform sampler2D myTextureSampler;
 
 void main()
 {
-	outputColor = texture(myTextureSampler, UV).rgba * vertColor;
-	//outputColor = vertColor;
+	//outputColor = texture(myTextureSampler, UV).rgba * vertColor;
+	outputColor = vertColor;
 }
