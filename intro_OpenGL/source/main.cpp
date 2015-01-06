@@ -55,56 +55,56 @@ int main()
 
 	//printf("Version: %s\n", glGetString(GL_VERSION));
 
-	const float vertexPositions[] =
-	{
-		1024 / 2.0, 720 / 2.0 + 10.0f, 0.0f, 1.0f,
-		1024 / 2.0 - 5.0f, 720 / 2.0f - 10.0f, 0.0f, 1.0f,
-		1024 / 2.0f + 5.0f, 720 / 2.0f - 10.0f, 0.0f, 1.0f,
-	};
-
-	const float vertexColors[] =
-	{
-		1.0f, 0.0f, 1.0f, 1.0f,
-		0.0f, 1.0f, 0.0f, 0.5f,
-		0.0f, 0.0f, 1.0f, 1.0f,
-	};
-
-	//Vertex* myShape = new Vertex[3];
-	//myShape[0].fPositions[0] = 0.0f;
-	//myShape[0].fPositions[1] = 0.03f;
-	//myShape[1].fPositions[0] = -0.025f;
-	//myShape[1].fPositions[1] = -0.05f;
-	//myShape[2].fPositions[0] = 0.025f;
-	//myShape[2].fPositions[1] = -0.05f;
-	//for (int i = 0; i < 3; i++)
+	//const float vertexPositions[] =
 	//{
-	//	myShape[i].fPositions[2] = 0.0f;
-	//	myShape[i].fPositions[3] = 1.0f;
-	//	myShape[i].fColors[0] = 0.0f;
-	//	myShape[i].fColors[1] = 0.0f;
-	//	myShape[i].fColors[2] = 1.0f;
-	//	myShape[i].fColors[3] = 1.0f;
-	//}
+	//	1024 / 2.0, 720 / 2.0 + 10.0f, 0.0f, 1.0f,
+	//	1024 / 2.0 - 5.0f, 720 / 2.0f - 10.0f, 0.0f, 1.0f,
+	//	1024 / 2.0f + 5.0f, 720 / 2.0f - 10.0f, 0.0f, 1.0f,
+	//};
+
+	//const float vertexColors[] =
+	//{
+	//	1.0f, 0.0f, 1.0f, 1.0f,
+	//	0.0f, 1.0f, 0.0f, 0.5f,
+	//	0.0f, 0.0f, 1.0f, 1.0f,
+	//};
+
+	Vertex* myShape = new Vertex[3];
+	myShape[0].fPositions[0] = 0.0f;
+	myShape[0].fPositions[1] = 0.03f;
+	myShape[1].fPositions[0] = -0.025f;
+	myShape[1].fPositions[1] = -0.05f;
+	myShape[2].fPositions[0] = 0.025f;
+	myShape[2].fPositions[1] = -0.05f;
+	for (int i = 0; i < 3; i++)
+	{
+		myShape[i].fPositions[2] = 0.0f;
+		myShape[i].fPositions[3] = 1.0f;
+		myShape[i].fColors[0] = 0.0f;
+		myShape[i].fColors[1] = 0.0f;
+		myShape[i].fColors[2] = 1.0f;
+		myShape[i].fColors[3] = 1.0f;
+	}
 
 	//create id for vertex buffer object
-	//GLuint uiVBO;
-	//glGenBuffers(1, &uiVBO);
+	GLuint uiVBO;
+	glGenBuffers(1, &uiVBO);
 
 	//check if succeeded
-	//if (uiVBO != 0)
-	//{
-	//	bind VBO
-	//	glBindBuffer(GL_ARRAY_BUFFER, uiVBO);
-	//	allocate space for vertices on graphics card
-	//	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex)* 3, NULL, GL_STATIC_DRAW);
-	//	get pointer to allocated space on graphics card
-	//	GLvoid* vBuffer = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
-	//	copy data to graphics card
-	//	memcpy(vBuffer, myShape, sizeof(Vertex)* 3);
-	//	unmap and unbind buffer
-	//	glUnmapBuffer(GL_ARRAY_BUFFER);
-	//	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	//}
+	if (uiVBO != 0)
+	{
+		//bind VBO
+		glBindBuffer(GL_ARRAY_BUFFER, uiVBO);
+		//allocate space for vertices on graphics card
+		glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex)* 3, NULL, GL_STATIC_DRAW);
+		//get pointer to allocated space on graphics card
+		GLvoid* vBuffer = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+		//copy data to graphics card
+		memcpy(vBuffer, myShape, sizeof(Vertex)* 3);
+		//unmap and unbind buffer
+		glUnmapBuffer(GL_ARRAY_BUFFER);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
 
 
 	//create shader program
@@ -127,10 +127,10 @@ int main()
 		//enable shaders
 		glUseProgram(programFlat);
 
-		//glBindBuffer(GL_ARRAY_BUFFER, uiVBO);
+		glBindBuffer(GL_ARRAY_BUFFER, uiVBO);
 
 		//send ortho projection info to shader
-		glUniformMatrix4fv(IDFlat, 1, GL_FALSE, orthographicProjection);
+		//glUniformMatrix4fv(IDFlat, 1, GL_FALSE, orthographicProjection);
 		
 
 		//enable vertex array state
@@ -138,8 +138,8 @@ int main()
 		glEnableVertexAttribArray(1);
 
 		//specify where vertex array is
-		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, vertexPositions);
-		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, vertexColors);
+		//glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, vertexPositions);
+		//glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, vertexColors);
 
 		/*
 		since the data is in the same array, need to specify the gap between vertices
@@ -147,8 +147,8 @@ int main()
 		of the structure instance. The positions are at the start, so thgeir offset is 0.
 		The colors are after after the positions, so they are offset by the size of the position data.
 		*/
-		//glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-		//glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(float)* 4));
+		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(float)* 4));
 
 
 
