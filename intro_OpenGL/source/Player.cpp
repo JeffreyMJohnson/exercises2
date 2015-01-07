@@ -2,7 +2,10 @@
 
 Player::Player()
 {
-	vertices[0] = Vector4(1024 * .5f);
-	vertices[1] = Vector4(720 * .5f) + 10.0f;
-	vertices[2] = Vector4(1024 * .5f) - 5.0f;
+	position = glm::vec4(1024 * .5f, 720 * .5f, 0,1);
+	modelVertices[0] = glm::vec4(0, 10.0f,0,1);
+	modelVertices[1] = glm::vec4(-5.0f, -10.0f,0,1);
+	modelVertices[2] = glm::vec4(5.0f, -10.0f,0,1);
+	color = glm::vec4(0, 0, 1, 1);
+
 }

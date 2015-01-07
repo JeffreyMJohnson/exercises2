@@ -9,7 +9,7 @@
 #include <string>
 #include <fstream>
 #include <time.h>
-#include "TheMath.h"
+#include "Player.h"
 
 #define GLEW_STATIC
 
@@ -72,22 +72,38 @@ int main()
 		stars[i].fColors[3] = 1.0f;
 	}
 
+
+	//Vertex* myShape = new Vertex[3];
+	//myShape[0].fPositions[0] = 1024 / 2.0;
+	//myShape[0].fPositions[1] = 720 / 2.0 + 10.0f;
+	//myShape[1].fPositions[0] = 1024 / 2.0 - 5.0f;
+	//myShape[1].fPositions[1] = 720 / 2.0f - 10.0f;
+	//myShape[2].fPositions[0] = 1024 / 2.0f + 5.0f;
+	//myShape[2].fPositions[1] = 720 / 2.0f - 10.0f;
+	//for (int i = 0; i < 3; i++)
+	//{
+	//	myShape[i].fPositions[2] = 0.0f;
+	//	myShape[i].fPositions[3] = 1.0f;
+	//	myShape[i].fColors[0] = 0.0f;
+	//	myShape[i].fColors[1] = 0.0f;
+	//	myShape[i].fColors[2] = 1.0f;
+	//	myShape[i].fColors[3] = 1.0f;
+	//}
+
 	Vertex* myShape = new Vertex[3];
-	myShape[0].fPositions[0] = 1024 / 2.0;
-	myShape[0].fPositions[1] = 720 / 2.0 + 10.0f;
-	myShape[1].fPositions[0] = 1024 / 2.0 - 5.0f;
-	myShape[1].fPositions[1] = 720 / 2.0f - 10.0f;
-	myShape[2].fPositions[0] = 1024 / 2.0f + 5.0f;
-	myShape[2].fPositions[1] = 720 / 2.0f - 10.0f;
+	Player player;
 	for (int i = 0; i < 3; i++)
 	{
-		myShape[i].fPositions[2] = 0.0f;
-		myShape[i].fPositions[3] = 1.0f;
-		myShape[i].fColors[0] = 0.0f;
-		myShape[i].fColors[1] = 0.0f;
-		myShape[i].fColors[2] = 1.0f;
-		myShape[i].fColors[3] = 1.0f;
+		myShape[i].fPositions[0] = player.modelVertices[i].x + player.position.x;
+		myShape[i].fPositions[1] = player.modelVertices[i].y + player.position.y;
+		myShape[i].fPositions[2] = player.modelVertices[i].z + player.position.z;
+		myShape[i].fPositions[3] = player.modelVertices[i].w + player.position.w;
+		myShape[i].fColors[0] = player.color.x;
+		myShape[i].fColors[1] = player.color.y;
+		myShape[i].fColors[2] = player.color.z;
+		myShape[i].fColors[3] = player.color.w;
 	}
+
 
 
 
