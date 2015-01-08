@@ -74,10 +74,11 @@ int main()
 	}
 
 	Player myShape;
-	//myShape.Initialize(glm::vec4(1024 / 2.0, 720 / 2.0, 0, 0), glm::vec4(0, 0, 1, 1));
+	myShape.Initialize(glm::vec4(1024 / 2.0, 720 / 2.0, 0, 0), glm::vec4(0, 0, 1, 1));
 	Asteroid myAsteroid;
+	myAsteroid.Initialize(glm::vec4(1024 * .25f, 720 * .75f, 0, 0), glm::vec4(0, 1, 0, 1));
 	Asteroid anotherAsteroid;
-	anotherAsteroid.SetPosition(glm::vec4(1024 * .75f, 720 * .25f, 0, 0));
+	anotherAsteroid.Initialize(glm::vec4(1024 * .75f, 720 * .25f, 0, 0), glm::vec4(0, 1, 0, 1));
 
 	//create ID for a vertex buffer object
 	GLuint uiVBO;

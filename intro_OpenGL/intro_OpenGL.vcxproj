@@ -72,7 +72,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="source\main.cpp" />
-    <ClCompile Include="source\Player.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="source\FlatFragmentShader.glsl" />
