@@ -80,6 +80,8 @@
     <None Include="source\VertexShader.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\Asteroid.h" />
+    <ClInclude Include="include\Entity.h" />
     <ClInclude Include="include\Player.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -10,6 +10,7 @@
 #include <fstream>
 #include <time.h>
 #include "Player.h"
+#include "Asteroid.h"
 
 #define GLEW_STATIC
 
@@ -21,11 +22,11 @@ GLuint CreateProgram(const char* a_vertex, const char* a_frag);
 
 float* getOrtho(float left, float right, float bottom, float top, float a_fNear, float a_fFar);
 
-struct Vertex
-{
-	float fPositions[4];
-	float fColors[4];
-};
+//struct Vertex
+//{
+//	float fPositions[4];
+//	float fColors[4];
+//};
 
 int main()
 {
@@ -56,7 +57,7 @@ int main()
 		return -1;
 	}
 
-	//printf("Version: %s\n", glGetString(GL_VERSION));
+	printf("Version: %s\n", glGetString(GL_VERSION));
 
 	Vertex* stars = new Vertex[100];
 
@@ -72,47 +73,18 @@ int main()
 		stars[i].fColors[3] = 1.0f;
 	}
 
-
-	//Vertex* myShape = new Vertex[3];
-	//myShape[0].fPositions[0] = 1024 / 2.0;
-	//myShape[0].fPositions[1] = 720 / 2.0 + 10.0f;
-	//myShape[1].fPositions[0] = 1024 / 2.0 - 5.0f;
-	//myShape[1].fPositions[1] = 720 / 2.0f - 10.0f;
-	//myShape[2].fPositions[0] = 1024 / 2.0f + 5.0f;
-	//myShape[2].fPositions[1] = 720 / 2.0f - 10.0f;
-	//for (int i = 0; i < 3; i++)
-	//{
-	//	myShape[i].fPositions[2] = 0.0f;
-	//	myShape[i].fPositions[3] = 1.0f;
-	//	myShape[i].fColors[0] = 0.0f;
-	//	myShape[i].fColors[1] = 0.0f;
-	//	myShape[i].fColors[2] = 1.0f;
-	//	myShape[i].fColors[3] = 1.0f;
-	//}
-
-	Vertex* myShape = new Vertex[3];
-	Player player;
-	for (int i = 0; i < 3; i++)
-	{
-		myShape[i].fPositions[0] = player.modelVertices[i].x + player.position.x;
-		myShape[i].fPositions[1] = player.modelVertices[i].y + player.position.y;
-		myShape[i].fPositions[2] = player.modelVertices[i].z + player.position.z;
-		myShape[i].fPositions[3] = player.modelVertices[i].w + player.position.w;
-		myShape[i].fColors[0] = player.color.x;
-		myShape[i].fColors[1] = player.color.y;
-		myShape[i].fColors[2] = player.color.z;
-		myShape[i].fColors[3] = player.color.w;
-	}
-
-
-
+	Player myShape;
+	//myShape.Initialize(glm::vec4(1024 / 2.0, 720 / 2.0, 0, 0), glm::vec4(0, 0, 1, 1));
+	Asteroid myAsteroid;
+	Asteroid anotherAsteroid;
+	anotherAsteroid.SetPosition(glm::vec4(1024 * .75f, 720 * .25f, 0, 0));
 
 	//create ID for a vertex buffer object
 	GLuint uiVBO;
 	glGenBuffers(1, &uiVBO);
 
-	GLuint uiVBO2;
-	glGenBuffers(1, &uiVBO2);
+	//GLuint uiVBO2;
+	//glGenBuffers(1, &uiVBO2);
 
 	if (uiVBO != 0)
 	{
@@ -129,23 +101,6 @@ int main()
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	}
-
-	if (uiVBO2 != 0)
-	{
-		//bind vbo
-		glBindBuffer(GL_ARRAY_BUFFER, uiVBO2);
-		//allocate space for vertices on the graphics card
-		glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex)* 3, NULL, GL_STATIC_DRAW);
-		//get pointer to allocated space on the graphics card
-		GLvoid* vBuffer = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
-		//copy data to graphics card
-		memcpy(vBuffer, myShape, sizeof(Vertex)* 3);
-		//unmap and unbind buffer
-		glUnmapBuffer(GL_ARRAY_BUFFER);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	}
-
 
 	//create shader program
 	GLuint programFlat = CreateProgram(".\\source\\VertexShader.glsl", ".\\source\\FlatFragmentShader.glsl");
@@ -194,13 +149,9 @@ int main()
 
 		glDrawArrays(GL_POINTS, 0, 100);
 
-		glBindBuffer(GL_ARRAY_BUFFER, uiVBO2);
-
-		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(float)* 4));
-
-		glDrawArrays(GL_TRIANGLES, 0, 3);
-
+		myShape.Draw();
+		myAsteroid.Draw();
+		anotherAsteroid.Draw();
 
 		//swap front and back buffers
 		glfwSwapBuffers(window);
@@ -211,11 +162,8 @@ int main()
 
 	glfwTerminate();
 
-	delete myShape;
-	//for (int i = 0; i < 100; i++)
-	//{
-	//	delete stars[i];
-	//}
+	//delete myShape;
+	delete stars;
 	return 0;
 }
 
