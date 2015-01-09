@@ -6,14 +6,14 @@
 #include "glm\glm.hpp"
 #include <vector>
 
+#include <iostream>
+
 //generic vertex for sending to GPU via Vertex Buffer Object
 struct Vertex
 {
 	float fPositions[4];
 	float fColors[4];
 };
-
-#define BUFFERSIZE sizeof(Vertex) * modelVertices.size()
 
 class Entity
 {
@@ -24,8 +24,8 @@ public:
 		position = a_position;
 		color = a_color;
 		glGenBuffers(1, &uiVBO);
+		glGenBuffers(1, &uiIBO);
 		UpdateVertices();
-
 	}
 
 	void SetPosition(glm::vec4& a_position)
@@ -35,6 +35,11 @@ public:
 	}
 
 	virtual void Draw() = 0;
+
+	void CleanUp()
+	{
+		glDeleteBuffers(1, &uiIBO);
+	}
 	
 
 
@@ -43,6 +48,7 @@ protected:
 	glm::vec4 position;
 	glm::vec4 color;
 	GLuint uiVBO;
+	GLuint uiIBO;
 	Vertex* verticesBuffer;
 
 	virtual void LoadModelVertices() = 0;
@@ -64,6 +70,25 @@ protected:
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 
+	void UpdateIBO()
+	{
+		//bind IBO
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, uiIBO);
+		//allocate space for index info on  the graphics card
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, modelVertices.size() * sizeof(char), NULL, GL_STATIC_DRAW);
+		//get pointer to newly allocated space on GPU
+		GLvoid* iBuffer = glMapBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY);
+		//specify order to draw vertices
+		//in this case it's in sequential order
+		for (int i = 0; i < modelVertices.size(); i++)
+		{
+			((char*)iBuffer)[i] = i;
+		}
+		//unmap and unbind 
+		glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	}
+
 	void UpdateVertices()
 	{
 		for (int i = 0; i < modelVertices.size(); i++)
@@ -78,6 +103,22 @@ protected:
 			verticesBuffer[i].fColors[3] = color.a;
 		}
 		UpdateVBO();
+		UpdateIBO();
+	}
+
+	//return the max distance from given point and all the points of this object
+	float MaxDistance(glm::vec4& otherPoint)
+	{
+		float result = 0;
+		for (glm::vec4 pos : modelVertices)
+		{
+			float d = sqrt(
+				((pos.x - otherPoint.x) * (pos.x - otherPoint.x)) +
+				((pos.y - otherPoint.y) * (pos.y - otherPoint.y)));
+			if (d > result)
+				result = d;
+		}
+		return result;
 	}
 };
 

@@ -66,10 +66,6 @@ int main()
 	Player playerInstance;
 	playerInstance.Initialize(glm::vec4(1024 / 2.0, 720 / 2.0, 0, 0), glm::vec4(0, 0, 1, 1));
 	LoadAsteroids();
-	//Asteroid myAsteroid;
-	//myAsteroid.Initialize(glm::vec4(1024 * .25f, 720 * .75f, 0, 0), glm::vec4(0, 1, 0, 1));
-	//Asteroid anotherAsteroid;
-	//anotherAsteroid.Initialize(glm::vec4(1024 * .75f, 720 * .25f, 0, 0), glm::vec4(0, 1, 0, 1));
 
 	//create shader program
 	GLuint programFlat = CreateProgram(".\\source\\VertexShader.glsl", ".\\source\\FlatFragmentShader.glsl");
@@ -79,11 +75,6 @@ int main()
 
 	//set up mapping to the screen to pixel coordinates
 	float* orthographicProjection = getOrtho(0, Globals::SCREEN_WIDTH, 0, Globals::SCREEN_HEIGHT, 0, 100);
-	//Matrix4::GetOrthographicProjection(0, 1024, 0, 720, 0, 100).Get(orthographicProjection);
-
-	//glPointSize(2);
-
-
 	//loop until user closes the window
 	while (!glfwWindowShouldClose(window))
 	{
@@ -106,8 +97,6 @@ int main()
 		starsInstance.Draw();
 		playerInstance.Draw();
 		DrawAsteroids();
-		//myAsteroid.Draw();
-		//anotherAsteroid.Draw();
 
 		//swap front and back buffers
 		glfwSwapBuffers(window);
@@ -115,6 +104,10 @@ int main()
 		//poll for and process events
 		glfwPollEvents();
 	}
+
+	starsInstance.CleanUp();
+	playerInstance.CleanUp();
+
 
 	glfwTerminate();
 	DestroyAsteroids();
@@ -251,7 +244,7 @@ void LoadAsteroids()
 	{
 		Asteroid* a = new Asteroid;
 		int posX = rand() % Globals::SCREEN_WIDTH;
-		int posY = rand() % Globals::SCREEN_WIDTH;
+		int posY = rand() % Globals::SCREEN_HEIGHT;
 		a->Initialize(glm::vec4(posX, posY, 0, 0), glm::vec4(0, 1, 0, 1));
 		asteroidList.push_back(a);
 	}
@@ -269,6 +262,7 @@ void DestroyAsteroids()
 {
 	for (int i = 0; i < asteroidList.size(); i++)
 	{
+		asteroidList[i]->CleanUp();
 		delete asteroidList[i];
 	}
 	asteroidList.clear();
