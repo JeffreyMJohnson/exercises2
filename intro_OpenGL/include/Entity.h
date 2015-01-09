@@ -21,7 +21,6 @@ public:
 	//eventually make this a file path so can load model data via file.
 	void Initialize(glm::vec4& a_position, glm::vec4& a_color)
 	{
-
 		position = a_position;
 		color = a_color;
 		glGenBuffers(1, &uiVBO);

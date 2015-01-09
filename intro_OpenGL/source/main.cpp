@@ -1,7 +1,7 @@
 #include <GL\glew.h>
 #include <GL\wglew.h>
 
-//GLEW includes must b e first!
+//GLEW includes must be first!
 #include <GLFW\glfw3.h>
 
 #include <iostream>
@@ -11,6 +11,7 @@
 #include <time.h>
 #include "Player.h"
 #include "Asteroid.h"
+#include "Stars.h"
 
 #define GLEW_STATIC
 
@@ -22,11 +23,11 @@ GLuint CreateProgram(const char* a_vertex, const char* a_frag);
 
 float* getOrtho(float left, float right, float bottom, float top, float a_fNear, float a_fFar);
 
-//struct Vertex
-//{
-//	float fPositions[4];
-//	float fColors[4];
-//};
+void LoadAsteroids();
+void DrawAsteroids();
+void DestroyAsteroids();
+
+vector<Asteroid*> asteroidList;
 
 int main()
 {
@@ -38,7 +39,7 @@ int main()
 	}
 
 	GLFWwindow* window;
-	window = glfwCreateWindow(1024, 720, "Hello World", NULL, NULL);
+	window = glfwCreateWindow(Globals::SCREEN_WIDTH, Globals::SCREEN_HEIGHT, "Hello World", NULL, NULL);
 
 	if (!window)
 	{
@@ -59,49 +60,16 @@ int main()
 
 	printf("Version: %s\n", glGetString(GL_VERSION));
 
-	Vertex* stars = new Vertex[100];
-
-	for (int i = 0; i < 100; i++)
-	{
-		stars[i].fPositions[0] = rand() % 1024;
-		stars[i].fPositions[1] = rand() % 720;
-		stars[i].fPositions[2] = 0.0f;
-		stars[i].fPositions[3] = 1.0f;
-		stars[i].fColors[0] = 1.0f;
-		stars[i].fColors[1] = 1.0f;
-		stars[i].fColors[2] = 1.0f;
-		stars[i].fColors[3] = 1.0f;
-	}
-
-	Player myShape;
-	myShape.Initialize(glm::vec4(1024 / 2.0, 720 / 2.0, 0, 0), glm::vec4(0, 0, 1, 1));
-	Asteroid myAsteroid;
-	myAsteroid.Initialize(glm::vec4(1024 * .25f, 720 * .75f, 0, 0), glm::vec4(0, 1, 0, 1));
-	Asteroid anotherAsteroid;
-	anotherAsteroid.Initialize(glm::vec4(1024 * .75f, 720 * .25f, 0, 0), glm::vec4(0, 1, 0, 1));
-
-	//create ID for a vertex buffer object
-	GLuint uiVBO;
-	glGenBuffers(1, &uiVBO);
-
-	//GLuint uiVBO2;
-	//glGenBuffers(1, &uiVBO2);
-
-	if (uiVBO != 0)
-	{
-		//bind vbo
-		glBindBuffer(GL_ARRAY_BUFFER, uiVBO);
-		//allocate space for vertices on the graphics card
-		glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex)* 100, NULL, GL_STATIC_DRAW);
-		//get pointer to allocated space on the graphics card
-		GLvoid* vBuffer = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
-		//copy data to graphics card
-		memcpy(vBuffer, stars, sizeof(Vertex)* 100);
-		//unmap and unbind buffer
-		glUnmapBuffer(GL_ARRAY_BUFFER);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	}
+	//instantiate 2d models and initalize inital position and color
+	Stars starsInstance;
+	starsInstance.Initialize(glm::vec4(0, 0, 0, 0), glm::vec4(1, 1, 1, 1));
+	Player playerInstance;
+	playerInstance.Initialize(glm::vec4(1024 / 2.0, 720 / 2.0, 0, 0), glm::vec4(0, 0, 1, 1));
+	LoadAsteroids();
+	//Asteroid myAsteroid;
+	//myAsteroid.Initialize(glm::vec4(1024 * .25f, 720 * .75f, 0, 0), glm::vec4(0, 1, 0, 1));
+	//Asteroid anotherAsteroid;
+	//anotherAsteroid.Initialize(glm::vec4(1024 * .75f, 720 * .25f, 0, 0), glm::vec4(0, 1, 0, 1));
 
 	//create shader program
 	GLuint programFlat = CreateProgram(".\\source\\VertexShader.glsl", ".\\source\\FlatFragmentShader.glsl");
@@ -110,10 +78,10 @@ int main()
 	GLuint IDFlat = glGetUniformLocation(programFlat, "MVP");
 
 	//set up mapping to the screen to pixel coordinates
-	float* orthographicProjection = getOrtho(0, 1024, 0, 720, 0, 100);
+	float* orthographicProjection = getOrtho(0, Globals::SCREEN_WIDTH, 0, Globals::SCREEN_HEIGHT, 0, 100);
 	//Matrix4::GetOrthographicProjection(0, 1024, 0, 720, 0, 100).Get(orthographicProjection);
 
-	glPointSize(2);
+	//glPointSize(2);
 
 
 	//loop until user closes the window
@@ -125,7 +93,7 @@ int main()
 		//enable shaders
 		glUseProgram(programFlat);
 
-		glBindBuffer(GL_ARRAY_BUFFER, uiVBO);
+		//glBindBuffer(GL_ARRAY_BUFFER, uiVBO);
 
 		//send ortho projection info to shader
 		glUniformMatrix4fv(IDFlat, 1, GL_FALSE, orthographicProjection);
@@ -134,25 +102,12 @@ int main()
 		glEnableVertexAttribArray(0);
 		glEnableVertexAttribArray(1);
 
-		/*Since the data is in the same array, we need to specify the gap between vertices (a whole Vertex structure instance) and the offset
-		of the data from the beginning of the structure instance.  The positions are at the start, so their offset is o. but the colors are after the positions
-		so they are offset by the size of the position data.*/
-		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(float)* 4));
-
-		//specify where vertex array is
-		//glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, vertexPositions);
-		//glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, vertexColors);
-
-
-		//draw code here
-		//glDrawArrays(GL_TRIANGLES, 0, 3);
-
-		glDrawArrays(GL_POINTS, 0, 100);
-
-		myShape.Draw();
-		myAsteroid.Draw();
-		anotherAsteroid.Draw();
+		//call objects draw functions
+		starsInstance.Draw();
+		playerInstance.Draw();
+		DrawAsteroids();
+		//myAsteroid.Draw();
+		//anotherAsteroid.Draw();
 
 		//swap front and back buffers
 		glfwSwapBuffers(window);
@@ -162,9 +117,7 @@ int main()
 	}
 
 	glfwTerminate();
-
-	//delete myShape;
-	delete stars;
+	DestroyAsteroids();
 	return 0;
 }
 
@@ -290,4 +243,33 @@ float* getOrtho(float left, float right, float bottom, float top, float a_fNear,
 	toReturn[14] = -1 * ((a_fFar + a_fNear) / (a_fFar - a_fNear));
 	toReturn[15] = 1;
 	return toReturn;
+}
+
+void LoadAsteroids()
+{
+	for (int i = 0; i < Globals::NUM_OF_ASTEROIDS; i++)
+	{
+		Asteroid* a = new Asteroid;
+		int posX = rand() % Globals::SCREEN_WIDTH;
+		int posY = rand() % Globals::SCREEN_WIDTH;
+		a->Initialize(glm::vec4(posX, posY, 0, 0), glm::vec4(0, 1, 0, 1));
+		asteroidList.push_back(a);
+	}
+}
+
+void DrawAsteroids()
+{
+	for (int i = 0; i < asteroidList.size(); i++)
+	{
+		asteroidList[i]->Draw();
+	}
+}
+
+void DestroyAsteroids()
+{
+	for (int i = 0; i < asteroidList.size(); i++)
+	{
+		delete asteroidList[i];
+	}
+	asteroidList.clear();
 }
