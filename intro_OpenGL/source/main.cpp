@@ -70,7 +70,7 @@ int main()
 	Stars starsInstance;
 	starsInstance.Initialize(glm::vec4(0, 0, 0, 0), glm::vec4(1, 1, 1, 1));
 	Player2 playerInstance;
-	playerInstance.Initialize(glm::vec4(1024 / 2.0, 720 / 2.0, 0, 0), glm::vec4(0, 0, 1, 1), uiProgramTextured);
+	playerInstance.Initialize(glm::vec4(1024 / 2.0, 720 / 2.0, 0, 0), glm::vec4(1,1, 1, 1), uiProgramTextured);
 	LoadAsteroids();
 
 	//find the position of the matrix variable int the shader program
@@ -100,6 +100,13 @@ int main()
 		//call objects draw functions
 		starsInstance.Draw();
 		playerInstance.Draw(IDTexture, orthographicProjection);
+
+		glUseProgram(programFlat);
+
+		//glBindBuffer(GL_ARRAY_BUFFER, uiVBO);
+
+		//send ortho projection info to shader
+		glUniformMatrix4fv(IDFlat, 1, GL_FALSE, orthographicProjection);
 		DrawAsteroids();
 
 		//swap front and back buffers
@@ -256,6 +263,7 @@ void LoadAsteroids()
 
 void DrawAsteroids()
 {
+
 	for (int i = 0; i < asteroidList.size(); i++)
 	{
 		asteroidList[i]->Draw();
