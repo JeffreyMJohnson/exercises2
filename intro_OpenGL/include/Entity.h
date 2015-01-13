@@ -4,6 +4,7 @@
 #include <GL\glew.h>
 #include <GL\wglew.h>
 #include "glm\glm.hpp"
+#include "SOIL\SOIL.h"
 #include <vector>
 
 #include <iostream>
@@ -13,18 +14,20 @@ struct Vertex
 {
 	float fPositions[4];
 	float fColors[4];
+	float fUVs[2];
 };
 
 class Entity
 {
 public:
 	//eventually make this a file path so can load model data via file.
-	void Initialize(glm::vec4& a_position, glm::vec4& a_color)
+	void Initialize(glm::vec4& a_position, glm::vec4& a_color, GLuint a_ShaderProgram)
 	{
 		position = a_position;
 		color = a_color;
 		glGenBuffers(1, &uiVBO);
 		glGenBuffers(1, &uiIBO);
+		programShader = a_ShaderProgram;
 		UpdateVertices();
 	}
 
@@ -34,7 +37,7 @@ public:
 		UpdateVertices();
 	}
 
-	virtual void Draw() = 0;
+	virtual void Draw(GLuint uniformLocationID, float* orthoProjection) = 0;
 
 	void CleanUp()
 	{
@@ -45,11 +48,17 @@ public:
 
 protected:
 	std::vector<glm::vec4> modelVertices;
+	std::vector<glm::vec2> modelUVs;
 	glm::vec4 position;
 	glm::vec4 color;
 	GLuint uiVBO;
 	GLuint uiIBO;
+	GLuint uiTextureID;
+	GLuint programShader;
 	Vertex* verticesBuffer;
+	int textureWidth;
+	int textureHeight;
+	int textureBPP;
 
 	virtual void LoadModelVertices() = 0;
 
@@ -101,6 +110,11 @@ protected:
 			verticesBuffer[i].fColors[1] = color.g;
 			verticesBuffer[i].fColors[2] = color.b;
 			verticesBuffer[i].fColors[3] = color.a;
+			if (modelUVs.size() > 0)
+			{
+				verticesBuffer[i].fUVs[0] = modelUVs[i].x;
+				verticesBuffer[i].fUVs[1] = modelUVs[i].y;
+			}
 		}
 		UpdateVBO();
 		UpdateIBO();
@@ -119,6 +133,34 @@ protected:
 				result = d;
 		}
 		return result;
+	}
+
+	unsigned int loadTexture(const char* a_pFilename, int & a_iWidth, int & a_iHeight, int & a_iBPP)
+	{
+		unsigned int uiTextureID = 0;
+		//check file exists
+		if (a_pFilename != nullptr)
+		{
+			//read in image data from file
+			unsigned char* pImageData = SOIL_load_image(a_pFilename, &a_iWidth, &a_iHeight, &a_iBPP, SOIL_LOAD_AUTO);
+
+			//check for successful read
+			if (pImageData)
+			{
+				//create opengl texture handle
+				uiTextureID = SOIL_create_OGL_texture(pImageData, a_iWidth, a_iHeight, a_iBPP,
+					SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT);
+				//clear what was read in from file now that it is stored in the handle
+				SOIL_free_image_data(pImageData);
+			}
+
+			//check for errors
+			if (uiTextureID == 0)
+			{
+				std::cerr << "SOIL loading error: " << SOIL_last_result() << std::endl;
+			}
+			return uiTextureID;
+		}
 	}
 };
 

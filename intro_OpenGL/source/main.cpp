@@ -9,7 +9,7 @@
 #include <string>
 #include <fstream>
 #include <time.h>
-#include "Player2.h"
+#include "Player.h"
 #include "Asteroid.h"
 #include "Stars.h"
 
@@ -23,8 +23,8 @@ GLuint CreateProgram(const char* a_vertex, const char* a_frag);
 
 float* getOrtho(float left, float right, float bottom, float top, float a_fNear, float a_fFar);
 
-void LoadAsteroids();
-void DrawAsteroids();
+void LoadAsteroids(GLuint a_shaderProgram);
+void DrawAsteroids(GLuint uniformLocationID, float* orthoProjection);
 void DestroyAsteroids();
 
 vector<Asteroid*> asteroidList;
@@ -68,10 +68,10 @@ int main()
 
 	//instantiate 2d models and initalize inital position and color
 	Stars starsInstance;
-	starsInstance.Initialize(glm::vec4(0, 0, 0, 0), glm::vec4(1, 1, 1, 1));
-	Player2 playerInstance;
+	starsInstance.Initialize(glm::vec4(0, 0, 0, 0), glm::vec4(1, 1, 1, 1), programFlat);
+	Player playerInstance;
 	playerInstance.Initialize(glm::vec4(1024 / 2.0, 720 / 2.0, 0, 0), glm::vec4(1,1, 1, 1), uiProgramTextured);
-	LoadAsteroids();
+	LoadAsteroids(uiProgramTextured);
 
 	//find the position of the matrix variable int the shader program
 	GLuint IDFlat = glGetUniformLocation(programFlat, "MVP");
@@ -86,28 +86,28 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		//enable shaders
-		glUseProgram(programFlat);
+		//glUseProgram(programFlat);
 
 		//glBindBuffer(GL_ARRAY_BUFFER, uiVBO);
 
 		//send ortho projection info to shader
-		glUniformMatrix4fv(IDFlat, 1, GL_FALSE, orthographicProjection);
+		//glUniformMatrix4fv(IDFlat, 1, GL_FALSE, orthographicProjection);
 
 		//enable vertex array state
-		glEnableVertexAttribArray(0);
-		glEnableVertexAttribArray(1);
+		//glEnableVertexAttribArray(0);
+		//glEnableVertexAttribArray(1);
 
 		//call objects draw functions
-		starsInstance.Draw();
+		starsInstance.Draw(IDFlat, orthographicProjection);
 		playerInstance.Draw(IDTexture, orthographicProjection);
 
-		glUseProgram(programFlat);
+		//glUseProgram(programFlat);
 
-		//glBindBuffer(GL_ARRAY_BUFFER, uiVBO);
+		////glBindBuffer(GL_ARRAY_BUFFER, uiVBO);
 
-		//send ortho projection info to shader
-		glUniformMatrix4fv(IDFlat, 1, GL_FALSE, orthographicProjection);
-		DrawAsteroids();
+		////send ortho projection info to shader
+		//glUniformMatrix4fv(IDFlat, 1, GL_FALSE, orthographicProjection);
+		DrawAsteroids(IDTexture, orthographicProjection);
 
 		//swap front and back buffers
 		glfwSwapBuffers(window);
@@ -249,24 +249,24 @@ float* getOrtho(float left, float right, float bottom, float top, float a_fNear,
 	return toReturn;
 }
 
-void LoadAsteroids()
+void LoadAsteroids(GLuint a_shaderProgram)
 {
 	for (int i = 0; i < Globals::NUM_OF_ASTEROIDS; i++)
 	{
 		Asteroid* a = new Asteroid;
 		int posX = rand() % Globals::SCREEN_WIDTH;
 		int posY = rand() % Globals::SCREEN_HEIGHT;
-		a->Initialize(glm::vec4(posX, posY, 0, 0), glm::vec4(0, 1, 0, 1));
+		a->Initialize(glm::vec4(posX, posY, 0, 0), glm::vec4(1,1, 1, 1), a_shaderProgram);
 		asteroidList.push_back(a);
 	}
 }
 
-void DrawAsteroids()
+void DrawAsteroids(GLuint uniformLocationID, float* orthoProjection)
 {
 
 	for (int i = 0; i < asteroidList.size(); i++)
 	{
-		asteroidList[i]->Draw();
+		asteroidList[i]->Draw(uniformLocationID, orthoProjection);
 	}
 }
 

@@ -14,6 +14,11 @@ public:
 		LoadModelVertices();
 		verticesBuffer = new Vertex[modelVertices.size()];
 		glPointSize(2);
+		//no texture
+		textureWidth = 0;
+		textureHeight = 0;
+		textureBPP = 0;
+		uiTextureID = 0;
 	}
 
 	~Stars()
@@ -21,8 +26,17 @@ public:
 		delete verticesBuffer;
 	}
 
-	void Draw()
+	void Draw(GLuint uniformLocationID, float* orthoProjection)
 	{
+		glUseProgram(programShader);
+
+		//send ortho projection info to shader
+		glUniformMatrix4fv(uniformLocationID, 1, GL_FALSE, orthoProjection);
+
+		//enable vertex array state
+		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
+
 		glBindBuffer(GL_ARRAY_BUFFER, uiVBO);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, uiIBO);
 
