@@ -99,6 +99,7 @@ int main()
 
 		//call objects draw functions
 		starsInstance.Draw(IDFlat, orthographicProjection);
+		playerInstance.Update(window);
 		playerInstance.Draw(IDTexture, orthographicProjection);
 
 		//glUseProgram(programFlat);

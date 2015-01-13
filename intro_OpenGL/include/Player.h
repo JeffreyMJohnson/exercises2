@@ -24,6 +24,49 @@ public:
 		delete verticesBuffer;
 	}
 
+	void Update(GLFWwindow* windowHandle)
+	{
+		if (glfwGetKey(windowHandle, GLFW_KEY_W) == GLFW_PRESS)
+		{
+			//move forward 
+			//std::cout << "move forward" << std::endl;
+			for (int i = 0; i < 3; i++)
+			{
+				modelVertices[i].y += .01f;
+			}
+			UpdateVertices();
+		}
+
+		if (glfwGetKey(windowHandle, GLFW_KEY_S))
+		{
+			//move backwards
+			for (int i = 0; i < modelVertices.size(); i++)
+			{
+				modelVertices[i].y -= .01f;
+			}
+			UpdateVertices();
+		}
+
+		if (glfwGetKey(windowHandle, GLFW_KEY_A))
+		{
+			//move backwards
+			for (int i = 0; i < modelVertices.size(); i++)
+			{
+				modelVertices[i].x -= .01f;
+			}
+			UpdateVertices();
+		}
+		if (glfwGetKey(windowHandle, GLFW_KEY_D))
+		{
+			//move backwards
+			for (int i = 0; i < modelVertices.size(); i++)
+			{
+				modelVertices[i].x += .01f;
+			}
+			UpdateVertices();
+		}
+	}
+
 	void Draw(GLuint uniformLocationID, float* orthoProjection)
 	{
 		glUseProgram(programShader);

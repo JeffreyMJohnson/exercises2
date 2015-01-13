@@ -3,6 +3,7 @@
 
 #include <GL\glew.h>
 #include <GL\wglew.h>
+#include "GLFW\glfw3.h"
 #include "glm\glm.hpp"
 #include "SOIL\SOIL.h"
 #include <vector>
@@ -59,6 +60,7 @@ protected:
 	int textureWidth;
 	int textureHeight;
 	int textureBPP;
+
 
 	virtual void LoadModelVertices() = 0;
 
