@@ -9,7 +9,7 @@
 #include <string>
 #include <fstream>
 #include <time.h>
-#include "Player.h"
+#include "Player2.h"
 #include "Asteroid.h"
 #include "Stars.h"
 
@@ -60,18 +60,22 @@ int main()
 
 	printf("Version: %s\n", glGetString(GL_VERSION));
 
-	//instantiate 2d models and initalize inital position and color
-	Stars starsInstance;
-	starsInstance.Initialize(glm::vec4(0, 0, 0, 0), glm::vec4(1, 1, 1, 1));
-	Player playerInstance;
-	playerInstance.Initialize(glm::vec4(1024 / 2.0, 720 / 2.0, 0, 0), glm::vec4(0, 0, 1, 1));
-	LoadAsteroids();
+
 
 	//create shader program
 	GLuint programFlat = CreateProgram(".\\source\\VertexShader.glsl", ".\\source\\FlatFragmentShader.glsl");
+	GLuint uiProgramTextured = CreateProgram(".\\source\\VertexShader.glsl", ".\\source\\TexturedFragmentShader.glsl");
+
+	//instantiate 2d models and initalize inital position and color
+	Stars starsInstance;
+	starsInstance.Initialize(glm::vec4(0, 0, 0, 0), glm::vec4(1, 1, 1, 1));
+	Player2 playerInstance;
+	playerInstance.Initialize(glm::vec4(1024 / 2.0, 720 / 2.0, 0, 0), glm::vec4(0, 0, 1, 1), uiProgramTextured);
+	LoadAsteroids();
 
 	//find the position of the matrix variable int the shader program
 	GLuint IDFlat = glGetUniformLocation(programFlat, "MVP");
+	GLuint IDTexture = glGetUniformLocation(uiProgramTextured, "MVP");
 
 	//set up mapping to the screen to pixel coordinates
 	float* orthographicProjection = getOrtho(0, Globals::SCREEN_WIDTH, 0, Globals::SCREEN_HEIGHT, 0, 100);
@@ -95,7 +99,7 @@ int main()
 
 		//call objects draw functions
 		starsInstance.Draw();
-		playerInstance.Draw();
+		playerInstance.Draw(IDTexture, orthographicProjection);
 		DrawAsteroids();
 
 		//swap front and back buffers
