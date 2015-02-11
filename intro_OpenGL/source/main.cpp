@@ -31,6 +31,7 @@ vector<Asteroid*> asteroidList;
 
 int main()
 {
+	
 	srand(time(nullptr));
 
 	if (!glfwInit())
@@ -58,8 +59,8 @@ int main()
 		return -1;
 	}
 
+	
 	printf("Version: %s\n", glGetString(GL_VERSION));
-
 
 
 	//create shader program
@@ -85,29 +86,11 @@ int main()
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		//enable shaders
-		//glUseProgram(programFlat);
-
-		//glBindBuffer(GL_ARRAY_BUFFER, uiVBO);
-
-		//send ortho projection info to shader
-		//glUniformMatrix4fv(IDFlat, 1, GL_FALSE, orthographicProjection);
-
-		//enable vertex array state
-		//glEnableVertexAttribArray(0);
-		//glEnableVertexAttribArray(1);
-
 		//call objects draw functions
 		starsInstance.Draw(IDFlat, orthographicProjection);
 		playerInstance.Update(window);
 		playerInstance.Draw(IDTexture, orthographicProjection);
 
-		//glUseProgram(programFlat);
-
-		////glBindBuffer(GL_ARRAY_BUFFER, uiVBO);
-
-		////send ortho projection info to shader
-		//glUniformMatrix4fv(IDFlat, 1, GL_FALSE, orthographicProjection);
 		DrawAsteroids(IDTexture, orthographicProjection);
 
 		//swap front and back buffers
