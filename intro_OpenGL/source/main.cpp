@@ -26,6 +26,8 @@ float* getOrtho(float left, float right, float bottom, float top, float a_fNear,
 void LoadAsteroids(GLuint a_shaderProgram);
 void DrawAsteroids(GLuint uniformLocationID, float* orthoProjection);
 void DestroyAsteroids();
+bool CircleCircle(glm::vec2 a_center1, float a_radius1, glm::vec2 a_center2, float a_radius2);
+
 
 vector<Asteroid*> asteroidList;
 
